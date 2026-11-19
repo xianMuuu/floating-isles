@@ -6,8 +6,8 @@
 
 | | |
 |---|---|
-| 文件 | [`floating-isles.html`](./floating-isles.html)（约 2100 行，112 KB） |
-| 依赖 | 仅 [three.js r160](https://threejs.org)（CDN import map，含官方后处理 addons） |
+| 文件 | [`floating-isles.html`](./floating-isles.html)（约 2100 行，112 KB，源文件）· [`index.html`](./index.html)（站点版，由 [`build-site.mjs`](./build-site.mjs) 生成） |
+| 依赖 | 仅 [three.js r160](https://threejs.org)：源文件走 CDN import map，站点版打包在 [`libs/three/`](./libs/three) |
 | 资源 | 0 个图片 / 0 个音频文件，全部运行时合成 |
 | 许可证 | GPL-3.0-only，详见 [LICENSE](./LICENSE) |
 
@@ -37,6 +37,13 @@
 
 ## 快速开始
 
+**在线试玩（点开就能玩）**
+
+- GitHub Pages：<https://xianmuuu.github.io/floating-isles/>
+- Qoder Sites：<https://floating-isles-nsmkoaty00n.qoder.zone>
+
+两个地址都指向自包含的 `index.html`，three.js 已打包进仓库，不依赖任何 CDN。
+
 **方式一：本地静态服务器（推荐）**
 
 ```bash
@@ -45,17 +52,19 @@ python -m http.server 8080
 npx serve .
 ```
 
-然后访问 <http://localhost:8080/floating-isles.html>。
+然后访问 <http://localhost:8080/>（站点版）或 <http://localhost:8080/floating-isles.html>（源文件版）。
 
-**方式二：直接双击 HTML**
+**方式二：直接双击 `floating-isles.html`**
 
-现代浏览器通常可以直接打开（内联 `<script type="module">` + CDN 的 `Access-Control-Allow-Origin: *`）。但部分浏览器会对 `file://` 源下的 ES Module 施加限制，如果白屏就换方式一。
+现代浏览器通常可以直接打开（内联 `<script type="module">` + CDN 的 `Access-Control-Allow-Origin: *`）。但部分浏览器会对 `file://` 源下的 ES Module 施加限制，如果白屏就换方式一。注意 `index.html` 用的是仓库内相对路径，`file://` 下会被 CORS 拦住，它需要方式一的服务器。
 
-**方式三：GitHub Pages**
+**方式三：GitHub Pages（本仓库已开启）**
 
-仓库设置 → *Pages* → Source 选 `Deploy from a branch` → 分支 `main` / 目录 `/ (root)` → 保存。约一分钟后即可通过 Pages 域名直接玩。
+Source 为 `main` / `/ (root)`，根目录的 `index.html` 即首页。仓库根必须保留 `.nojekyll`：Pages 的 legacy 构建默认跑 Jekyll，一旦根目录没有 `index.html`，它会把 `README.md` 渲染成首页，于是访问首页看到的是文档而不是游戏。
 
-> 需要联网：three.js 从 jsDelivr 加载。想完全离线请把 `three.module.js` 与 `examples/jsm/postprocessing/` 下到本地并改写 import map。
+改了 `floating-isles.html` 之后，跑 `node build-site.mjs` 重新生成 `index.html` 再推送。
+
+> 源文件版需要联网（three.js 从 jsDelivr 加载），国内网络可能取不到；站点版和两个在线地址不受影响。想手动改站点版可参考 `build-site.mjs` 里的 import map 替换。
 
 ---
 
@@ -527,7 +536,7 @@ worldRand            = mulberry32(seed)            // simplex 排列表
 ## 已知限制
 
 - **刷新即丢失**：没有 localStorage 存档，玩家盖的东西不保留（世界本身由 seed 决定，重进完全一致）。
-- **需要联网**：three.js 走 CDN。
+- **源文件版需要联网**：`floating-isles.html` 的 three.js 走 CDN；站点版 `index.html` 的库已随仓库分发，不依赖网络。
 - **放置方块没有连通性/高度约束**，理论上能往云上一直垒，绕过"必须靠上升气流"的设计意图（受 `buildCapacity` 限制）。
 - **实例化是方块级而非面级**：两个相邻暴露方块之间的那对内部面仍然会被光栅化。改成 greedy meshing 能再省一档，但会摧毁"增量挖放"的简单性——这里选择了可玩性优先。
 - 移除植被用的是把实例矩阵设成零尺度，顶点着色器仍会跑，槽位不回收。
@@ -542,4 +551,4 @@ Copyright (C) 2026 xianMuuu
 
 本程序为自由软件：你可以在 Free Software Foundation 发布的 **GNU GPLv3**（或其后的任意版本）的条款下再分发或修改它。详见 [LICENSE](./LICENSE)。
 
-依赖的 three.js 采用 MIT 许可证，由 three.js 作者版权所有；本项目通过 CDN 链接方式引用，不对其主张任何权利。
+依赖的 three.js 采用 MIT 许可证，由 three.js 作者版权所有；源文件通过 CDN 链接引用，站点版在 `libs/three/` 下随仓库分发官方 r160 原文件（未修改），不对其主张任何权利。

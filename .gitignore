@@ -17,3 +17,9 @@ desktop.ini
 *.log
 *.tmp
 ~$*
+
+# 本机凭据副本与自动化脚本，禁止入库
+research/
+
+# Qoder Sites 本机绑定描述符（含云端资源 ID）
+*.qoder.site
